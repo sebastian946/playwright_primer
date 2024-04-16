@@ -1,12 +1,12 @@
 import { test, expect } from "@playwright/test";
+import { LoginPage } from "./pageObjects/LoginPage";
 
 test("purchase an item", async ({ page }) => {
-  await page.goto("https://www.saucedemo.com/v1/");
+  await page.goto(process.env.URL);
 
-  await page.getByRole("textbox", { name: "Username" }).fill("standard_user");
+  const loginPage = new LoginPage(page);
 
-  await page.getByRole("textbox", { name: "Password" }).fill("secret_sauce");
-  await page.getByRole("button", { name: "LOGIN" }).click();
+  await loginPage.loginWithCredentials("standard_user", "secret_sauce");
 
   const items = await page
     .locator("#inventory_container  .inventory_item")
@@ -35,21 +35,22 @@ test("purchase an item", async ({ page }) => {
 
   button_checkout.click();
 
-  await page.getByRole("textbox", { name: "First Name" }).fill('Jhoan Sebastian');
+  await page
+    .getByRole("textbox", { name: "First Name" })
+    .fill("Jhoan Sebastian");
 
-  await page.getByRole("textbox", { name: "Last Name" }).fill('Duque Zapata');
+  await page.getByRole("textbox", { name: "Last Name" }).fill("Duque Zapata");
 
-  await page.getByRole("textbox", { name: "Zip/Postal Code" }).fill('12345');
+  await page.getByRole("textbox", { name: "Zip/Postal Code" }).fill("12345");
 
   await page.getByRole("button", { name: "CONTINUE" }).click();
 
-  await page.getByRole("link", {name: "FINISH"}).click();
+  await page.getByRole("link", { name: "FINISH" }).click();
 
-  const header = page.locator('.complete-header');
+  const header = page.locator(".complete-header");
 
   await expect(header).toBeVisible();
 
-
   const textToCompare = await header.innerText();
-  await expect(textToCompare).toEqual('THANK YOU FOR YOUR ORDER');
+  await expect(textToCompare).toEqual("THANK YOU FOR YOUR ORDER");
 });
